@@ -44,6 +44,24 @@
             android:exported="false"
             android:excludeFromRecents="true"/>
 
+        <!-- Remote control: start/stop scenarios from ADB or automation apps. Ignored unless enabled in the settings. -->
+        <activity
+            android:name=".ui.RemoteControlActivity"
+            android:theme="@style/AppTheme.TranslucentActivity"
+            android:taskAffinity=""
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="com.nimku.autoclicker.START" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.nimku.autoclicker.STOP" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 

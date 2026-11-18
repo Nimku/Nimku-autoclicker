@@ -82,6 +82,12 @@ class SettingsFragment : Fragment() {
             setOnClickListener(viewModel::toggleShowOnLockScreen)
         }
 
+        viewBinding.fieldRemoteControl.apply {
+            setTitle(requireContext().getString(R.string.field_remote_control_title))
+            setDescription(requireContext().getString(R.string.field_remote_control_desc))
+            setOnClickListener(viewModel::toggleRemoteControl)
+        }
+
         viewBinding.fieldInputBlockWorkaround.apply {
             setTitle(requireContext().getString(R.string.field_input_block_workaround_title))
             setDescription(requireContext().getString(R.string.field_input_block_workaround_desc))
@@ -113,6 +119,7 @@ class SettingsFragment : Fragment() {
                 launch { viewModel.isLegacyNotificationUiEnabled.collect(viewBinding.fieldLegacyNotificationUi::setChecked) }
                 launch { viewModel.isEntireScreenCaptureForced.collect(viewBinding.fieldForceEntireScreen::setChecked) }
                 launch { viewModel.isShowOnLockScreenEnabled.collect(viewBinding.fieldShowOnLockScreen::setChecked) }
+                launch { viewModel.isRemoteControlEnabled.collect(viewBinding.fieldRemoteControl::setChecked) }
                 launch { viewModel.isInputWorkaroundEnabled.collect(viewBinding.fieldInputBlockWorkaround::setChecked) }
                 launch { viewModel.shouldShowInputBlockWorkaround.collect(::updateInputBlockWorkaroundVisibility) }
                 launch { viewModel.shouldShowEntireScreenCapture.collect(::updateForceEntireScreenVisibility) }

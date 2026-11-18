@@ -19,4 +19,6 @@
     <string name="tile_label_start_scenario">Start Nimku</string>
     <string name="tile_label_stop_scenario">Stop Nimku</string>
     <string name="tile_subtext_unavailable">No Scenario defined</string>
+    <string name="toast_remote_control_disabled">Remote control is off. Turn it on in Nimku settings.</string>
+    <string name="toast_remote_control_not_found">No scenario found: %1$s</string>
 </resources>

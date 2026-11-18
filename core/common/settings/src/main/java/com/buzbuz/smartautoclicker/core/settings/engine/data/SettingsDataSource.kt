@@ -56,6 +56,9 @@ internal class SettingsDataSource @Inject constructor(
 
         val KEY_SHOW_ON_LOCKSCREEN: Preferences.Key<Boolean> =
             booleanPreferencesKey("showOnLockScreen")
+
+        val KEY_REMOTE_CONTROL: Preferences.Key<Boolean> =
+            booleanPreferencesKey("remoteControlEnabled")
     }
 
     private val dataStore: PreferencesDataStore =
@@ -114,6 +117,15 @@ internal class SettingsDataSource @Inject constructor(
     internal suspend fun toggleShowOnLockScreen() {
         dataStore.edit { preferences ->
             preferences[KEY_SHOW_ON_LOCKSCREEN] = !(preferences[KEY_SHOW_ON_LOCKSCREEN] ?: false)
+        }
+    }
+
+    internal fun isRemoteControlEnabled(): Flow<Boolean> =
+        dataStore.data.map { preferences -> preferences[KEY_REMOTE_CONTROL] ?: false }
+
+    internal suspend fun toggleRemoteControl() {
+        dataStore.edit { preferences ->
+            preferences[KEY_REMOTE_CONTROL] = !(preferences[KEY_REMOTE_CONTROL] ?: false)
         }
     }
 }

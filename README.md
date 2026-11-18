@@ -20,6 +20,34 @@ Nimku AutoClicker is based on the open-source [Smart AutoClicker / Klick'r](http
 | Build variants | Just `debug` and `release` (no product flavours) |
 | Branding | New name and launcher icon |
 
+## Remote control (ADB, Tasker, cloud phones)
+
+Turn on **Settings → Remote control** to start and stop scenarios from outside the app. Each scenario must be started from the app at least once first, so the permissions are granted.
+
+```bash
+# Start a scenario by its name
+adb shell am start -a com.nimku.autoclicker.START \
+  -n com.nimku.autoclicker/com.buzbuz.smartautoclicker.feature.qstile.ui.RemoteControlActivity \
+  --es name "My scenario"
+
+# Stop the running scenario
+adb shell am start -a com.nimku.autoclicker.STOP \
+  -n com.nimku.autoclicker/com.buzbuz.smartautoclicker.feature.qstile.ui.RemoteControlActivity
+```
+
+Other extras: `--el id <number>` to pick a scenario by id, and `--ez smart true|false` when a simple and a smart scenario share a name. With no extras, the last scenario used with the quick settings tile starts. Tasker and other automation apps can send the same intents.
+
+### Unattended setup (cloud phone, always-on device)
+
+Run these once from a computer connected with ADB:
+
+```bash
+adb shell settings put secure enabled_accessibility_services com.nimku.autoclicker/com.buzbuz.smartautoclicker.SmartAutoClickerService
+adb shell settings put secure accessibility_enabled 1
+adb shell appops set com.nimku.autoclicker PROJECT_MEDIA allow      # skip the screen capture prompt (Android 13 and older)
+adb shell dumpsys deviceidle whitelist +com.nimku.autoclicker      # don't kill the app in the background
+```
+
 ## Download
 
 Every push builds signed APKs with GitHub Actions:

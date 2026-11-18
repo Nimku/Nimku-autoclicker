@@ -58,6 +58,9 @@ class SettingsViewModel @Inject constructor(
     val isShowOnLockScreenEnabled: Flow<Boolean> =
         settingsRepository.showOnLockScreenFlow
 
+    val isRemoteControlEnabled: Flow<Boolean> =
+        settingsRepository.isRemoteControlEnabledFlow
+
     val shouldShowEntireScreenCapture: Flow<Boolean> =
         flowOf(Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM)
 
@@ -87,6 +90,10 @@ class SettingsViewModel @Inject constructor(
 
     fun toggleForceEntireScreenCapture() {
         settingsRepository.toggleForceEntireScreenCapture()
+    }
+
+    fun toggleRemoteControl() {
+        settingsRepository.toggleRemoteControl()
     }
 
     fun toggleShowOnLockScreen() {

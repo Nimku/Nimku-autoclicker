@@ -134,6 +134,8 @@
     <string name="field_input_block_workaround_desc">On Pixel Devices With Android 15, using an auto clicker can block the touch screen.\nTo unblock it, you need to touch the screen with multiple fingers at the same time. This setting tries to simulate this every 10s.</string>
 
     <string name="field_privacy">Privacy settings</string>
+    <string name="field_remote_control_title">Remote control</string>
+    <string name="field_remote_control_desc">Let ADB, Tasker or other automation apps start and stop scenarios by name. Useful for cloud phones and devices that run unattended.</string>
     <string name="field_remove_ads">Remove ads</string>
     <string name="field_troubleshooting">Troubleshooting</string>
 

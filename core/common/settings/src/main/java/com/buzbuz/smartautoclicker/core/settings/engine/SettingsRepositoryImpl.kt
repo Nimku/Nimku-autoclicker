@@ -70,6 +70,9 @@ internal class SettingsRepositoryImpl @Inject constructor(
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
     override val showOnLockScreenFlow: Flow<Boolean> = _showOnLockScreenFlow
 
+    // Not a state flow: callers need the persisted value, even right after the app process starts.
+    override val isRemoteControlEnabledFlow: Flow<Boolean> = dataSource.isRemoteControlEnabled()
+
     override val scenarioSortSettings: Flow<ScenarioSortSettings> = scenarioSortSettingsDatasource.getSortConfig()
 
 
@@ -129,6 +132,12 @@ internal class SettingsRepositoryImpl @Inject constructor(
         }
     }
 
+
+    override fun toggleRemoteControl() {
+        coroutineScope.launch {
+            dataSource.toggleRemoteControl()
+        }
+    }
 
     override fun setScenarioSortType(type: ScenarioSortType) {
         coroutineScope.launch { scenarioSortSettingsDatasource.setSortType(type) }

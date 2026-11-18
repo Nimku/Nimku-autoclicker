@@ -52,6 +52,10 @@ interface SettingsRepository {
     fun showOnLockScreen(): Boolean
     fun toggleShowOnLockScreenFlow()
 
+    /** Persisted value of the "Remote control" setting (start/stop scenarios from ADB or other apps). */
+    val isRemoteControlEnabledFlow: Flow<Boolean>
+    fun toggleRemoteControl()
+
 
     val scenarioSortSettings: Flow<ScenarioSortSettings>
     fun setScenarioSortType(type: ScenarioSortType)

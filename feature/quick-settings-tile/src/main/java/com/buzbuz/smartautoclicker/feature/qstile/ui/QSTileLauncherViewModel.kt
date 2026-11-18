@@ -35,7 +35,9 @@ import com.buzbuz.smartautoclicker.feature.qstile.domain.QSTileRepository
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -80,6 +82,46 @@ class QSTileLauncherViewModel @Inject constructor(
             qsTileRepository.startDumbScenario(scenario)
         }
     }
+
+    suspend fun isRemoteControlEnabled(): Boolean =
+        settingsRepository.isRemoteControlEnabledFlow.first()
+
+    fun stopScenarios() {
+        qsTileRepository.stopScenarios()
+    }
+
+    /**
+     * Find a scenario for a remote control request.
+     * @return the database id of the scenario and true if it is a smart scenario, or null if not found.
+     */
+    suspend fun findScenario(name: String?, id: Long, isSmart: Boolean?): Pair<Long, Boolean>? =
+        withContext(ioDispatcher) {
+            when {
+                !name.isNullOrEmpty() -> {
+                    val smartMatch = if (isSmart != false) {
+                        smartRepository.scenarios.first().firstOrNull { it.name.equals(name, ignoreCase = true) }
+                    } else null
+                    if (smartMatch != null) return@withContext smartMatch.id.databaseId to true
+
+                    val dumbMatch = if (isSmart != true) {
+                        dumbRepository.dumbScenarios.first().firstOrNull { it.name.equals(name, ignoreCase = true) }
+                    } else null
+                    dumbMatch?.let { it.id.databaseId to false }
+                }
+
+                id > 0 -> when (isSmart) {
+                    true -> smartRepository.getScenario(id)?.let { id to true }
+                    false -> dumbRepository.getDumbScenario(id)?.let { id to false }
+                    null -> smartRepository.getScenario(id)?.let { id to true }
+                        ?: dumbRepository.getDumbScenario(id)?.let { id to false }
+                }
+
+                else -> {
+                    val (lastId, lastIsSmart) = qsTileRepository.getLastScenarioDetails()
+                    if (lastId != null && lastIsSmart != null) lastId to lastIsSmart else null
+                }
+            }
+        }
 
     fun isEntireScreenCaptureForced(): Boolean =
         settingsRepository.isEntireScreenCaptureForced()
