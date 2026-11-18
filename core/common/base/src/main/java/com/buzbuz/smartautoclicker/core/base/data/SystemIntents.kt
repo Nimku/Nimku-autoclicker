@@ -23,6 +23,12 @@ import android.provider.Settings
 import androidx.annotation.RequiresApi
 
 
+/** Package name of the installed app. Set by the Application at startup. */
+object AppPackage {
+    @Volatile
+    var name: String = "com.nimku.autoclicker"
+}
+
 fun getOpenWebBrowserIntent(uri: Uri): Intent =
     Intent(Intent.ACTION_VIEW, uri).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -38,5 +44,5 @@ fun getOpenWebBrowserPickerIntent(uri: Uri): Intent =
 fun getNotificationSettingsIntent(): Intent =
     Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        putExtra(Settings.EXTRA_APP_PACKAGE, "com.buzbuz.smartautoclicker")
+        putExtra(Settings.EXTRA_APP_PACKAGE, AppPackage.name)
     }

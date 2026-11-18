@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Nimku AutoClicker launcher icon: tap rings and a pointer. -->
+<!-- Nimku AutoClicker launcher icon: a finger tapping the screen. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:strokeColor="@android:color/black" android:strokeAlpha="0.45" android:strokeWidth="3"
-        android:pathData="M48,28a20,20 0,1 1,0 40a20,20 0,1 1,0 -40z"/>
-    <path android:strokeColor="@android:color/black" android:strokeWidth="3.5"
-        android:pathData="M48,36a12,12 0,1 1,0 24a12,12 0,1 1,0 -24z"/>
-    <path android:fillColor="@android:color/black" android:pathData="M48,43a5,5 0,1 1,0 10a5,5 0,1 1,0 -10z"/>
-    <path android:fillColor="@android:color/black" android:strokeColor="@android:color/white" android:strokeWidth="2.5" android:strokeLineJoin="round"
-        android:pathData="M52,52L52,79L59,72.5L64.5,83.5L70,81L64.5,70L74,70Z"/>
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.86"
+        android:scaleY="0.86"
+        android:translateX="1.7"
+        android:translateY="0.5">
+        <path android:strokeColor="@android:color/black" android:strokeAlpha="0.5" android:strokeWidth="3"
+            android:strokeLineCap="round" android:pathData="M35.03,32.19A17,17 0,0 1,66.97,32.19"/>
+        <path android:strokeColor="@android:color/black" android:strokeWidth="3"
+            android:strokeLineCap="round" android:pathData="M41.60,34.58A10,10 0,0 1,60.40,34.58"/>
+        <path android:fillColor="@android:color/black" android:pathData="M45,39a6,6 0,0 1,12,0v14.5a5,5 0,0 1,9.5,1.5a5,5 0,0 1,9,2.5v12c0,8 -5,15 -14,15h-6c-5,0 -8,-2 -11,-6l-9,-12a4.5,4.5 0,0 1,7,-5.5l2.5,3z"/>
+    </group>
 </vector>

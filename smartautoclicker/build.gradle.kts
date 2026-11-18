@@ -15,31 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.buzbuz.gradle.obfuscation.getExtraActualApplicationId
-
 plugins {
     alias(libs.plugins.buzbuz.androidApplication)
     alias(libs.plugins.buzbuz.androidUnitTest)
-    alias(libs.plugins.buzbuz.obfuscation)
     alias(libs.plugins.buzbuz.buildParameters)
     alias(libs.plugins.buzbuz.hilt)
-}
-
-obfuscationConfig {
-    obfuscatedApplication {
-        create("com.buzbuz.smartautoclicker.application.SmartAutoClickerApplication")
-    }
-    obfuscatedComponents {
-        create("com.buzbuz.smartautoclicker.scenarios.ScenarioActivity")
-        create("com.buzbuz.smartautoclicker.SmartAutoClickerService")
-    }
-
-    setup(
-        // Nimku AutoClicker has its own application id, so it can be installed next to the original app.
-        applicationId = "com.nimku.autoclicker",
-        appNameResId = "@string/app_name",
-        shouldRandomize = buildParameters.randomizeAppId.typedValue,
-    )
 }
 
 android {
@@ -51,7 +31,14 @@ android {
     }
 
     defaultConfig {
-        applicationId = getExtraActualApplicationId()
+        // Nimku AutoClicker has its own application id, so it can be installed next to the original app.
+        applicationId = "com.nimku.autoclicker"
+
+        manifestPlaceholders["appName"] = "@string/app_name"
+        manifestPlaceholders["smartAutoClickerApplication"] =
+            "com.buzbuz.smartautoclicker.application.SmartAutoClickerApplication"
+        manifestPlaceholders["scenarioActivity"] = "com.buzbuz.smartautoclicker.scenarios.ScenarioActivity"
+        manifestPlaceholders["smartAutoClickerService"] = "com.buzbuz.smartautoclicker.SmartAutoClickerService"
 
         versionCode = 1
         versionName = "1.0.0"

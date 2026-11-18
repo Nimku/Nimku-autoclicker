@@ -47,12 +47,13 @@ class AppComponentsManager @Inject constructor() : AppComponentsProvider {
 
     override val tutorialActivityComponentName: ComponentName
         get() = ComponentName(
-            "com.buzbuz.smartautoclicker",
+            _originalAppId,
             "com.buzbuz.smartautoclicker.feature.tutorial.ui.TutorialActivity",
         )
 
     fun registerOriginalAppId(appId: String) {
         _originalAppId = appId
+        AppPackage.name = appId
     }
 
     fun registerScenarioActivity(componentName: ComponentName) {
