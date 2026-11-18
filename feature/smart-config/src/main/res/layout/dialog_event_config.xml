@@ -166,6 +166,22 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Old style: the state and test cards are hidden until the user asks for them. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_advanced_options"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_vertical_default"
+                android:text="@string/button_show_advanced_options"/>
+
+            <LinearLayout
+                android:id="@+id/layout_advanced_options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_event_config"
                 style="@style/AppTheme.Widget.Card"
@@ -300,6 +316,8 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

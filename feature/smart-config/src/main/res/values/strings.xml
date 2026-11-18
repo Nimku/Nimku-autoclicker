@@ -140,13 +140,13 @@
 
     <string name="dialog_title_scenario_config">Scenario</string>
 
-    <string name="message_empty_screen_event_title">No screen events !</string>
-    <string name="message_empty_screen_event_desc">A screen event contains a set of actions executed when a specific condition is detected on the screen.\nYou need at least one screen or trigger event in your scenario to execute it.</string>
-    <string name="message_empty_trigger_event_list_title">No trigger events !</string>
-    <string name="message_empty_trigger_event_list_desc">A trigger event contains a set of actions executed when a set of custom conditions are met.\nYou need at least one screen or trigger event in your scenario to execute it.</string>
+    <string name="message_empty_screen_event_title">No events yet</string>
+    <string name="message_empty_screen_event_desc">Tap + to add an event: when a picture appears on the screen, do a click, swipe or wait.</string>
+    <string name="message_empty_trigger_event_list_title">No timers</string>
+    <string name="message_empty_trigger_event_list_desc">Optional. Tap + to run actions on a timer or when a counter reaches a value, without looking at the screen.</string>
 
-    <string name="menu_item_title_image_events">Screen</string>
-    <string name="menu_item_title_trigger_events">Triggers</string>
+    <string name="menu_item_title_image_events">Events</string>
+    <string name="menu_item_title_trigger_events">Timers</string>
     <string name="menu_item_title_more">More</string>
 
     <string name="field_scenario_keep_screen_on_title">Keep screen on</string>
@@ -189,23 +189,25 @@
 
     <!-- Dialog Event ============================================================================================== -->
 
-    <string name="dialog_title_image_event">Screen Event</string>
+    <string name="dialog_title_image_event">Event</string>
     <string name="dialog_title_trigger_event">Trigger</string>
     <string name="dialog_title_action_type">Action type</string>
     <string name="dialog_title_screen_condition_type">Condition type</string>
     <string name="dialog_title_trigger_condition_type">Trigger type</string>
 
     <string name="field_condition_selector_desc">%1$d conditions</string>
-    <string name="message_empty_screen_condition_list_title">No screen conditions !</string>
-    <string name="message_empty_screen_condition_list_desc">A screen condition is a part of a screenshot that will be searched on each frames displayed by your phone screen.</string>
+    <string name="message_empty_screen_condition_list_title">No conditions</string>
+    <string name="message_empty_screen_condition_list_desc">Tap to capture what to look for on the screen.</string>
     <string name="message_empty_trigger_condition_list_title">No conditions !</string>
     <string name="message_empty_trigger_condition_list_desc">A condition is a custom criteria for starting an action.</string>
-    <string name="message_empty_action_list_title">No actions !</string>
-    <string name="message_empty_action_list_desc">An action is an interaction (click, gesture…) with your phone triggered when the created conditions are fulfilled.</string>
+    <string name="message_empty_action_list_title">No actions</string>
+    <string name="message_empty_action_list_desc">Tap to add a click, swipe or wait.</string>
 
     <string name="menu_item_title_conditions">Conditions</string>
     <string name="menu_item_title_actions">Actions</string>
     <string name="menu_item_title_state">State</string>
+    <string name="button_show_advanced_options">Advanced options ▾</string>
+    <string name="button_hide_advanced_options">Hide advanced options ▴</string>
 
     <string name="field_event_state_title">Initial state</string>
     <string name="field_event_state_desc_enabled">This event will be interpreted normally when playing the scenario</string>
@@ -219,9 +221,9 @@
     <string name="field_event_cooldown_desc">Ignore this event for a given duration after being fulfilled.</string>
     <string name="field_event_cooldown_edit_label">Duration</string>
 
-    <string name="field_operator_title">Operator</string>
-    <string name="field_operator_desc_or">Only one condition must be fulfilled to trigger the actions</string>
-    <string name="field_operator_desc_and">All conditions must be fulfilled to trigger the actions</string>
+    <string name="field_operator_title">Conditions needed</string>
+    <string name="field_operator_desc_or">Only one condition</string>
+    <string name="field_operator_desc_and">All conditions</string>
 
 
     <!-- Brief overlays ============================================================================================ -->

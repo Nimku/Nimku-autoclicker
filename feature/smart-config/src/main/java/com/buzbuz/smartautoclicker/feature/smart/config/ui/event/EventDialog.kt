@@ -172,6 +172,14 @@ class EventDialog(
             context.getString(R.string.dialog_title_image_event),
         )
         buttonTestEvent.setOnClickListener { debounceUserInteraction { showTryElementMenu() } }
+
+        buttonAdvancedOptions.setOnClickListener {
+            val show = layoutAdvancedOptions.visibility != View.VISIBLE
+            layoutAdvancedOptions.visibility = if (show) View.VISIBLE else View.GONE
+            buttonAdvancedOptions.setText(
+                if (show) R.string.button_hide_advanced_options else R.string.button_show_advanced_options
+            )
+        }
     }
 
     private fun DialogEventConfigBinding.setupConditionsCard() {

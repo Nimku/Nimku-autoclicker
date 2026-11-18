@@ -118,8 +118,8 @@
     <string name="field_show_scenario_filters_ui_title">Show Scenarios filters</string>
     <string name="field_show_scenario_filters_ui_desc">Display or hide the filters in the scenario list screen.</string>
 
-    <string name="field_legacy_action_ui_title">Legacy Action UI</string>
-    <string name="field_legacy_action_ui_desc">Change the action display by a list. Useful for complex scenarios.</string>
+    <string name="field_legacy_action_ui_title">Classic action list</string>
+    <string name="field_legacy_action_ui_desc">Show the actions of an event as a simple list, like in the first versions of the app.</string>
 
     <string name="field_legacy_notification_ui_title">Legacy Notification UI</string>
     <string name="field_legacy_notification_ui_desc">Use the system buttons instead of icon buttons in the notification.</string>
@@ -158,4 +158,12 @@
     <string name="button_import">Import</string>
     <string name="button_export">Export</string>
 
+    <plurals name="item_scenario_event_count">
+        <item quantity="one">%d event</item>
+        <item quantity="other">%d events</item>
+    </plurals>
+    <plurals name="item_scenario_action_count">
+        <item quantity="one">%d action</item>
+        <item quantity="other">%d actions</item>
+    </plurals>
 </resources>

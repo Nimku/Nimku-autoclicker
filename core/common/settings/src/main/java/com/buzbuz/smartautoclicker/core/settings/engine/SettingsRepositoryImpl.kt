@@ -47,7 +47,7 @@ internal class SettingsRepositoryImpl @Inject constructor(
     private val coroutineScope: CoroutineScope = CoroutineScope(ioDispatcher + SupervisorJob())
 
     private val _isLegacyActionUiEnabledFlow: StateFlow<Boolean> = dataSource.isLegacyActionUiEnabled()
-        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, true)
     override val isLegacyActionUiEnabledFlow: Flow<Boolean> = _isLegacyActionUiEnabledFlow
 
     private val _isLegacyNotificationUiEnabledFlow: StateFlow<Boolean> = dataSource.isLegacyNotificationUiEnabled()

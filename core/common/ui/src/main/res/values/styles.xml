@@ -49,11 +49,17 @@
     <style name="AppTheme.Widget.AppBarLayout" parent="@style/Widget.Material3.AppBarLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
-    <!-- Style for the toolbar. -->
+    <!-- Style for the toolbar: solid green bar with white title and icons. -->
     <style name="AppTheme.Widget.Toolbar" parent="@style/Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+        <item name="subtitleTextColor">?attr/colorOnPrimary</item>
+        <item name="navigationIconTint">?attr/colorOnPrimary</item>
+        <item name="android:theme">@style/ThemeOverlay.Material3.Dark.ActionBar</item>
     </style>
     <!-- Style for the dividers. -->
     <style name="AppTheme.Widget.Divider" parent="@style/Widget.Material3.MaterialDivider"/>

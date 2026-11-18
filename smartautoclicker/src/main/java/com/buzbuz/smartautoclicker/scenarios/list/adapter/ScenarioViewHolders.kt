@@ -16,7 +16,6 @@
  */
 package com.buzbuz.smartautoclicker.scenarios.list.adapter
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -28,10 +27,8 @@ import com.buzbuz.smartautoclicker.core.dumb.domain.model.DumbScenario
 import com.buzbuz.smartautoclicker.databinding.ItemDumbScenarioBinding
 import com.buzbuz.smartautoclicker.databinding.ItemEmptyScenarioBinding
 import com.buzbuz.smartautoclicker.databinding.ItemSmartScenarioBinding
-import com.buzbuz.smartautoclicker.scenarios.list.model.getTimeSinceString
 import kotlinx.coroutines.Job
 
-import java.util.Locale
 
 class EmptyScenarioHolder(
     private val viewBinding: ItemEmptyScenarioBinding,
@@ -51,11 +48,11 @@ class EmptyScenarioHolder(
     }
 }
 
-/** ViewHolder for the [ScenarioAdapter]. */
+/** ViewHolder for the [ScenarioAdapter]: simple row with the name, the action count, copy and delete. */
 class DumbScenarioViewHolder(
     private val viewBinding: ItemDumbScenarioBinding,
     private val startScenarioListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
-    private val expandCollapseListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
+    @Suppress("unused") private val expandCollapseListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
     private val exportClickListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
     private val copyClickedListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
     private val deleteScenarioListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
@@ -64,110 +61,81 @@ class DumbScenarioViewHolder(
     fun onBind(scenarioItem: ScenarioListUiState.Item.ScenarioItem.Valid.Dumb) = viewBinding.apply {
         scenarioName.text = scenarioItem.displayName
 
-        if (scenarioItem.showExportCheckbox) {
-            buttonExpandCollapse.visibility = View.INVISIBLE
-            buttonExpandCollapse.isEnabled = false
-            buttonExport.apply {
-                visibility = View.VISIBLE
-                isChecked = scenarioItem.checkedForExport
-            }
-            topDivider.visibility = View.GONE
-            root.setOnClickListener { exportClickListener(scenarioItem) }
+        val actionCount = scenarioItem.clickCount + scenarioItem.gestureCount + scenarioItem.pauseCount
+        scenarioSubtitle.text = root.context.resources.getQuantityString(
+            R.plurals.item_scenario_action_count, actionCount, actionCount,
+        )
 
-        } else {
-            buttonExpandCollapse.visibility = View.VISIBLE
-            buttonExpandCollapse.isEnabled = true
-            buttonExport.visibility = View.GONE
-            topDivider.visibility = View.VISIBLE
-            root.setOnClickListener { startScenarioListener(scenarioItem) }
-        }
-
-        if (!scenarioItem.showExportCheckbox && scenarioItem.expanded) {
-            scenarioDetails.visibility = View.VISIBLE
-            buttonExpandCollapse.setIconResource(R.drawable.ic_chevron_up)
-
-            executionCount.text = String.format(Locale.getDefault(), "%d", scenarioItem.startCount)
-            lastExecution.text = root.context.getTimeSinceString(scenarioItem.lastStartTimestamp)
-            clickCount.text = String.format(Locale.getDefault(), "%d", scenarioItem.clickCount)
-            swipeCount.text = String.format(Locale.getDefault(), "%d", scenarioItem.gestureCount)
-            pauseCount.text = String.format(Locale.getDefault(), "%d", scenarioItem.pauseCount)
-
-            repeatLimit.text = scenarioItem.repeatText
-            durationLimit.text = scenarioItem.maxDurationText
-        } else {
-            buttonExpandCollapse.setIconResource(R.drawable.ic_chevron_down)
-            scenarioDetails.visibility = View.GONE
-        }
+        bindButtons(
+            showExportCheckbox = scenarioItem.showExportCheckbox,
+            onRowClicked = {
+                if (scenarioItem.showExportCheckbox) exportClickListener(scenarioItem)
+                else startScenarioListener(scenarioItem)
+            },
+            setExportChecked = { buttonExport.isChecked = scenarioItem.checkedForExport },
+            root = root, buttonCopy = buttonCopy, buttonDelete = buttonDelete, buttonExport = buttonExport,
+        )
 
         buttonCopy.setOnClickListener { copyClickedListener(scenarioItem) }
-        buttonExpandCollapse.setOnClickListener { expandCollapseListener(scenarioItem) }
         buttonDelete.setOnClickListener { deleteScenarioListener(scenarioItem) }
         buttonExport.setOnClickListener { exportClickListener(scenarioItem) }
     }
 }
 
-/** ViewHolder for the [ScenarioAdapter]. */
+/** ViewHolder for the [ScenarioAdapter]: simple row with the name, the event count, copy and delete. */
 class SmartScenarioViewHolder(
     private val viewBinding: ItemSmartScenarioBinding,
-    bitmapProvider: (ScreenCondition.Image, onBitmapLoaded: (Bitmap?) -> Unit) -> Job?,
+    @Suppress("unused") bitmapProvider: (ScreenCondition.Image, onBitmapLoaded: (Bitmap?) -> Unit) -> Job?,
     private val startScenarioListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
-    private val expandCollapseListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
+    @Suppress("unused") private val expandCollapseListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
     private val exportClickListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
     private val copyClickedListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
     private val deleteScenarioListener: ((ScenarioListUiState.Item.ScenarioItem.Valid) -> Unit),
 ) : RecyclerView.ViewHolder(viewBinding.root) {
 
-    private val eventsAdapter = ScenarioEventsAdapter(bitmapProvider)
-
-    init {
-        viewBinding.listEvent.adapter = eventsAdapter
-    }
-
     fun onBind(scenarioItem: ScenarioListUiState.Item.ScenarioItem.Valid.Smart) = viewBinding.apply {
         scenarioName.text = scenarioItem.displayName
 
-        if (scenarioItem.showExportCheckbox) {
-            buttonExpandCollapse.visibility = View.INVISIBLE
-            buttonExpandCollapse.isEnabled = false
-            buttonExport.apply {
-                visibility = View.VISIBLE
-                isChecked = scenarioItem.checkedForExport
-            }
-            topDivider.visibility = View.GONE
-            root.setOnClickListener { exportClickListener(scenarioItem) }
-        } else {
-            buttonExpandCollapse.visibility = View.VISIBLE
-            buttonExpandCollapse.isEnabled = true
-            buttonExport.visibility = View.GONE
-            topDivider.visibility = View.VISIBLE
-            root.setOnClickListener { startScenarioListener(scenarioItem) }
-        }
+        val eventCount = scenarioItem.eventsItems.size + scenarioItem.triggerEventCount
+        scenarioSubtitle.text = root.context.resources.getQuantityString(
+            R.plurals.item_scenario_event_count, eventCount, eventCount,
+        )
 
-        if (!scenarioItem.showExportCheckbox && scenarioItem.expanded) {
-            scenarioDetails.visibility = View.VISIBLE
-            buttonExpandCollapse.setIconResource(R.drawable.ic_chevron_up)
-
-            executionCount.text = String.format(Locale.getDefault(), "%d", scenarioItem.startCount)
-            lastExecution.text = root.context.getTimeSinceString(scenarioItem.lastStartTimestamp)
-            detectionQuality.text = String.format(Locale.getDefault(), "%d", scenarioItem.detectionQuality)
-            triggerEventCount.text = String.format(Locale.getDefault(), "%d", scenarioItem.triggerEventCount)
-
-            eventsAdapter.submitList(scenarioItem.eventsItems)
-            if (scenarioItem.eventsItems.isEmpty()) {
-                listEvent.visibility = View.GONE
-                noImageEvents.visibility = View.VISIBLE
-            } else {
-                listEvent.visibility = View.VISIBLE
-                noImageEvents.visibility = View.GONE
-            }
-        } else {
-            buttonExpandCollapse.setIconResource(R.drawable.ic_chevron_down)
-            scenarioDetails.visibility = View.GONE
-        }
+        bindButtons(
+            showExportCheckbox = scenarioItem.showExportCheckbox,
+            onRowClicked = {
+                if (scenarioItem.showExportCheckbox) exportClickListener(scenarioItem)
+                else startScenarioListener(scenarioItem)
+            },
+            setExportChecked = { buttonExport.isChecked = scenarioItem.checkedForExport },
+            root = root, buttonCopy = buttonCopy, buttonDelete = buttonDelete, buttonExport = buttonExport,
+        )
 
         buttonCopy.setOnClickListener { copyClickedListener(scenarioItem) }
-        buttonExpandCollapse.setOnClickListener { expandCollapseListener(scenarioItem) }
         buttonDelete.setOnClickListener { deleteScenarioListener(scenarioItem) }
         buttonExport.setOnClickListener { exportClickListener(scenarioItem) }
     }
+}
+
+/** In export mode, the copy/delete buttons are replaced by the export checkbox. */
+private fun bindButtons(
+    showExportCheckbox: Boolean,
+    onRowClicked: () -> Unit,
+    setExportChecked: () -> Unit,
+    root: View,
+    buttonCopy: View,
+    buttonDelete: View,
+    buttonExport: View,
+) {
+    if (showExportCheckbox) {
+        buttonCopy.visibility = View.GONE
+        buttonDelete.visibility = View.GONE
+        buttonExport.visibility = View.VISIBLE
+        setExportChecked()
+    } else {
+        buttonCopy.visibility = View.VISIBLE
+        buttonDelete.visibility = View.VISIBLE
+        buttonExport.visibility = View.GONE
+    }
+    root.setOnClickListener { onRowClicked() }
 }

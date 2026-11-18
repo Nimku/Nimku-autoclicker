@@ -25,7 +25,6 @@ import android.view.Display
 import androidx.annotation.StyleRes
 import androidx.appcompat.view.ContextThemeWrapper
 
-import com.google.android.material.color.DynamicColors
 
 /**
  * Get a new context wrapper for an overlay.
@@ -57,7 +56,8 @@ internal fun newOverlayContext(parentContext: Context, @StyleRes theme: Int?, or
     }
     themes.drop(1).forEach { themeResId -> themedContext.theme.applyStyle(themeResId, true) }
 
-    return DynamicColors.wrapContextIfAvailable(themedContext)
+    // Nimku always uses its own green theme: wallpaper based dynamic colors are not applied.
+    return themedContext
 }
 
 /**

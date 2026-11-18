@@ -78,11 +78,11 @@ internal class SettingsDataSource @Inject constructor(
         }
 
     internal fun isLegacyActionUiEnabled(): Flow<Boolean> =
-        dataStore.data.map { preferences -> preferences[KEY_IS_LEGACY_ACTION_UI] ?: false }
+        dataStore.data.map { preferences -> preferences[KEY_IS_LEGACY_ACTION_UI] ?: true }
 
     internal suspend fun toggleLegacyActionUi() =
         dataStore.edit { preferences ->
-            preferences[KEY_IS_LEGACY_ACTION_UI] = !(preferences[KEY_IS_LEGACY_ACTION_UI] ?: false)
+            preferences[KEY_IS_LEGACY_ACTION_UI] = !(preferences[KEY_IS_LEGACY_ACTION_UI] ?: true)
         }
 
     internal fun isLegacyNotificationUiEnabled(): Flow<Boolean> =
