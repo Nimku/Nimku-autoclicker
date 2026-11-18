@@ -115,17 +115,17 @@
 
     <string name="activity_settings_title">Settings</string>
 
-    <string name="field_show_scenario_filters_ui_title">Show Scenarios filters</string>
-    <string name="field_show_scenario_filters_ui_desc">Display or hide the filters in the scenario list screen.</string>
+    <string name="field_show_scenario_filters_ui_title">Sort and filter bar</string>
+    <string name="field_show_scenario_filters_ui_desc">Show sorting and Simple/Smart filters above the scenario list.</string>
 
     <string name="field_legacy_action_ui_title">Classic action list</string>
     <string name="field_legacy_action_ui_desc">Show the actions of an event as a simple list, like in the first versions of the app.</string>
 
-    <string name="field_legacy_notification_ui_title">Legacy Notification UI</string>
-    <string name="field_legacy_notification_ui_desc">Use the system buttons instead of icon buttons in the notification.</string>
+    <string name="field_legacy_notification_ui_title">Text buttons in notification</string>
+    <string name="field_legacy_notification_ui_desc">Use text buttons instead of icons in the running notification.</string>
 
-    <string name="field_force_entire_screen_title">Force entire screen</string>
-    <string name="field_force_entire_screen_desc">Force the screen capture selector to \"Entire Screen\". Might not work depending on your device</string>
+    <string name="field_force_entire_screen_title">Always record entire screen</string>
+    <string name="field_force_entire_screen_desc">Skip the \"single app\" choice when screen recording starts. May not work on every device.</string>
 
     <string name="field_show_on_lock_screen_title">Show on lock screen</string>
     <string name="field_show_on_lock_screen_desc">Keep the floating menu visible when the device is locked.</string>

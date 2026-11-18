@@ -63,7 +63,7 @@
       - Text input fields labels and error messages.
       - Should be short and concise.
       -->
-    <string name="input_field_label_anti_detection">Anti-detection</string>
+    <string name="input_field_label_anti_detection">Random offset</string>
     <string name="input_field_label_click_press_duration">Press duration (ms)</string>
     <string name="input_field_label_name">Name</string>
     <string name="input_field_label_pause_duration">Pause duration</string>
@@ -82,8 +82,8 @@
     <!-- Dropdown field for selecting anti bot state -->
     <string name="dropdown_item_title_anti_detection_enabled">Enabled</string>
     <string name="dropdown_item_title_anti_detection_disabled">Disabled</string>
-    <string name="dropdown_helper_text_anti_detection_enabled">Randomize the click, gesture and pause positions and durations by a small random offset</string>
-    <string name="dropdown_helper_text_anti_detection_disabled">Execute all actions as declared</string>
+    <string name="dropdown_helper_text_anti_detection_enabled">Taps, swipes and waits vary slightly in position and timing</string>
+    <string name="dropdown_helper_text_anti_detection_disabled">Taps, swipes and waits are done exactly as set</string>
 
     <string name="dropdown_label_time_unit_ms">ms</string>
     <string name="dropdown_label_time_unit_s">s</string>
