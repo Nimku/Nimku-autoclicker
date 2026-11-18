@@ -16,10 +16,14 @@
  */
 package com.buzbuz.smartautoclicker.core.common.overlays.dialog
 
+import android.graphics.drawable.GradientDrawable
+import android.util.Log
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 
@@ -32,6 +36,7 @@ import com.buzbuz.smartautoclicker.core.common.overlays.base.BaseOverlay
 import com.buzbuz.smartautoclicker.core.common.overlays.manager.OverlayManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.color.MaterialColors
 
 import java.io.PrintWriter
 
@@ -115,9 +120,44 @@ abstract class OverlayDialog(@StyleRes theme: Int? = null) : BaseOverlay(theme, 
                 state = BottomSheetBehavior.STATE_EXPANDED
                 isDraggable = false
             }
+
+            showAsFloatingDialog(this)
         }
 
         onDialogCreated(dialog!!)
+    }
+
+    /**
+     * Old style: display the dialog as a centered floating window with rounded corners over a dimmed screen,
+     * instead of a full screen bottom sheet.
+     */
+    private fun showAsFloatingDialog(sheetDialog: BottomSheetDialog) {
+        try {
+            val metrics = context.resources.displayMetrics
+            val density = metrics.density
+            val maxWidthPx = (560 * density).toInt()
+            val width = minOf((metrics.widthPixels * 0.94f).toInt(), maxWidthPx)
+            val height = (metrics.heightPixels * 0.88f).toInt()
+
+            sheetDialog.window?.apply {
+                setLayout(width, height)
+                setGravity(Gravity.CENTER)
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                setDimAmount(0.55f)
+            }
+
+            sheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.apply {
+                val surfaceColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface)
+                background = GradientDrawable().apply {
+                    cornerRadius = 8 * density
+                    setColor(surfaceColor)
+                }
+                outlineProvider = ViewOutlineProvider.BACKGROUND
+                clipToOutline = true
+            }
+        } catch (ex: Exception) {
+            Log.w(TAG, "Can't display the dialog as a floating window, keeping the bottom sheet", ex)
+        }
     }
 
     @CallSuper
@@ -174,3 +214,5 @@ abstract class OverlayDialog(@StyleRes theme: Int? = null) : BaseOverlay(theme, 
             .println()
     }
 }
+
+private const val TAG = "OverlayDialog"
