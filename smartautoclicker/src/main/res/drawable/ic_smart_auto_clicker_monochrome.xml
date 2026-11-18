@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nimku AutoClicker launcher icon: tap rings and a pointer. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:strokeColor="@android:color/black" android:strokeAlpha="0.45" android:strokeWidth="3"
+        android:pathData="M48,28a20,20 0,1 1,0 40a20,20 0,1 1,0 -40z"/>
+    <path android:strokeColor="@android:color/black" android:strokeWidth="3.5"
+        android:pathData="M48,36a12,12 0,1 1,0 24a12,12 0,1 1,0 -24z"/>
+    <path android:fillColor="@android:color/black" android:pathData="M48,43a5,5 0,1 1,0 10a5,5 0,1 1,0 -10z"/>
+    <path android:fillColor="@android:color/black" android:strokeColor="@android:color/white" android:strokeWidth="2.5" android:strokeLineJoin="round"
+        android:pathData="M52,52L52,79L59,72.5L64.5,83.5L70,81L64.5,70L74,70Z"/>
+</vector>
