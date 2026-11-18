@@ -91,8 +91,8 @@ data class ScenarioListUiState(
                 enabled = true,
             ),
             tutorialsItemState = Item(
-                visible = true,
-                enabled = true,
+                visible = false,
+                enabled = false,
             ),
             settingsItemState = Item(true),
         )

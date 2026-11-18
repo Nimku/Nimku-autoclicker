@@ -11,6 +11,9 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build Nimku AutoClicker
@@ -69,8 +72,24 @@ jobs:
           name: NimkuAutoClicker-apks
           path: dist/*.apk
 
-      - name: Publish GitHub release
+      - name: Publish versioned release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          files: dist/*.apk
+
+      - name: Publish test build release
+        if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: Test build ${{ github.run_number }}
+          prerelease: true
+          make_latest: true
+          body: |
+            Automatic test build from branch `${{ github.ref_name }}` (commit ${{ github.sha }}).
+
+            **Which file to install?** `NimkuAutoClicker-universal-release.apk` works on every phone.
+            The other files are smaller but each one only works on a specific CPU type (`arm64-v8a` fits most modern phones).
           files: dist/*.apk

@@ -67,7 +67,7 @@ class ScenarioCreationViewModel @Inject constructor(
         .map { it != UserBillingState.PURCHASED }
 
     private val _selectedType: MutableStateFlow<ScenarioTypeSelection> =
-        MutableStateFlow(ScenarioTypeSelection.SMART)
+        MutableStateFlow(ScenarioTypeSelection.DUMB)
     val scenarioTypeSelectionState: Flow<ScenarioTypeSelectionState> =
         combine(_selectedType, revenueRepository.userBillingState) { selectedType, billingState ->
             ScenarioTypeSelectionState(

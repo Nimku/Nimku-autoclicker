@@ -67,11 +67,11 @@ internal class SettingsDataSource @Inject constructor(
         )
 
     internal fun isFilterScenarioUiEnabled(): Flow<Boolean> =
-        dataStore.data.map { preferences -> preferences[KEY_IS_FILTER_SCENARIO_UI_ENABLED] ?: true }
+        dataStore.data.map { preferences -> preferences[KEY_IS_FILTER_SCENARIO_UI_ENABLED] ?: false }
 
     internal suspend fun toggleFilterScenarioUi() =
         dataStore.edit { preferences ->
-            preferences[KEY_IS_FILTER_SCENARIO_UI_ENABLED] = !(preferences[KEY_IS_FILTER_SCENARIO_UI_ENABLED] ?: true)
+            preferences[KEY_IS_FILTER_SCENARIO_UI_ENABLED] = !(preferences[KEY_IS_FILTER_SCENARIO_UI_ENABLED] ?: false)
         }
 
     internal fun isLegacyActionUiEnabled(): Flow<Boolean> =
