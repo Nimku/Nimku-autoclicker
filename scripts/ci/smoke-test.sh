@@ -129,6 +129,24 @@ sleep 3
 $UI dump 10-list-after-smart-creation
 sleep 5   # let the accessibility service bind again after the UI tree dumps
 
+step "create the Clash of Kings bot from the Game bots button"
+$UI tap desc:"Game bots" id:action_templates
+sleep 2
+$UI dump 10b-bot-templates-dialog
+$UI tap textc:"Kill monsters"
+sleep 3
+$UI dump 10c-bot-created
+$UI tap text:OK
+sleep 2
+$UI dump 10d-list-with-bot
+if $UI has textc:"Kill monsters"; then
+  echo "BOT TEMPLATE CHECK: OK"
+else
+  echo "BOT TEMPLATE CHECK: FAILED"
+  BOT_FAILED=1
+fi
+sleep 5
+
 step "start the Smart scenario"
 $UI taprow SmartTest button_start
 sleep 5
@@ -165,6 +183,10 @@ adb logcat -d | grep -iE "nimku|smartautoclicker|buzbuz|Overlay|Klickr" | tail -
 
 if adb logcat -d -b crash | grep -q "$PKG"; then
   echo "SMOKE TEST: APP CRASHED"
+  exit 1
+fi
+if [ "${BOT_FAILED:-0}" = "1" ]; then
+  echo "SMOKE TEST: THE BOT TEMPLATE WAS NOT CREATED"
   exit 1
 fi
 if [ "${CLICK_FAILED:-0}" = "1" ]; then

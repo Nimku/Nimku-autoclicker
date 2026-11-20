@@ -41,6 +41,12 @@
         tools:ignore="AlwaysShowAction"/>
 
     <item
+        android:id="@+id/action_templates"
+        android:icon="@drawable/ic_smart"
+        app:showAsAction="ifRoom"
+        android:title="@string/menu_item_title_bot_templates" />
+
+    <item
         android:id="@+id/action_search"
         android:icon="@drawable/abc_ic_search_api_material"
         app:showAsAction="always|collapseActionView"

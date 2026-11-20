@@ -34,6 +34,11 @@ import com.buzbuz.smartautoclicker.core.settings.domain.SettingsRepository
 import com.buzbuz.smartautoclicker.core.settings.domain.model.ScenarioSortType
 import com.buzbuz.smartautoclicker.feature.smart.config.domain.usecase.condition.GetImageConditionBitmapJobUseCase
 
+import com.buzbuz.smartautoclicker.core.display.config.DisplayConfigManager
+import com.buzbuz.smartautoclicker.core.processing.domain.DETECTION_QUALITY_MIN
+import com.buzbuz.smartautoclicker.scenarios.templates.BotTemplate
+import com.buzbuz.smartautoclicker.scenarios.templates.createBotTemplate
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.Dispatchers
@@ -47,8 +52,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import javax.inject.Inject
+
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
 
 @HiltViewModel
 class ScenarioListViewModel @Inject constructor(
@@ -57,6 +67,7 @@ class ScenarioListViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val smartRepository: IRepository,
     private val dumbRepository: IDumbRepository,
+    private val displayConfigManager: DisplayConfigManager,
 ) : ViewModel() {
 
     /** Current state type of the ui. */
@@ -190,6 +201,20 @@ class ScenarioListViewModel @Inject constructor(
      *
      * @param item the scenario to be deleted.
      */
+    /** Create the ready-made scenario of a bot template, then call [onCreated] with its name on the main thread. */
+    fun createBotTemplate(template: BotTemplate, onCreated: (String) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val displaySize = displayConfigManager.displayConfig.sizePx
+            // Templates are measured on a portrait game screen.
+            val width = min(displaySize.x, displaySize.y)
+            val height = max(displaySize.x, displaySize.y)
+            val detectionQuality = max(DETECTION_QUALITY_MIN.toInt(), floor(height / TEMPLATE_DETECTION_QUALITY_RATIO).toInt())
+
+            smartRepository.createBotTemplate(template, width, height, detectionQuality)
+            withContext(Dispatchers.Main) { onCreated(template.scenarioName) }
+        }
+    }
+
     fun deleteScenario(item: ScenarioListUiState.Item.ScenarioItem) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val scenario = item.scenario) {
@@ -263,3 +288,6 @@ data class ScenarioExpandedSelection(
     val dumbSelection: Set<Long> = mutableSetOf(),
     val smartSelection: Set<Long> = mutableSetOf(),
 )
+
+/** Text detection needs more pixels than image detection: use a higher detection quality for bot templates. */
+private const val TEMPLATE_DETECTION_QUALITY_RATIO = 1.5

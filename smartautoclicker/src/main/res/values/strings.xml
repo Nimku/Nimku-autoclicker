@@ -158,6 +158,9 @@
     <string name="button_import">Import</string>
     <string name="button_export">Export</string>
 
+    <string name="menu_item_title_bot_templates">Game bots</string>
+    <string name="dialog_title_bot_templates">Ready-made game bots</string>
+    <string name="message_bot_template_created">The bot was added to your scenarios.\n\nBefore starting it:\n1. Open the game on the world map.\n2. Open the map search once and choose the type (monster or resource) and the level you want. The game remembers it.\n3. Close the search, then press the play button of the bot in Nimku.\n\nThe bot reads the game buttons (Search, Attack, Gather, March), so it works on any screen size. Use it on an account you can afford to lose: games can ban bots.</string>
     <plurals name="item_scenario_event_count">
         <item quantity="one">%d event</item>
         <item quantity="other">%d events</item>

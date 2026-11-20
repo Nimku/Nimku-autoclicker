@@ -37,6 +37,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 
 import com.buzbuz.smartautoclicker.R
+import com.buzbuz.smartautoclicker.scenarios.templates.BotTemplate
 import com.buzbuz.smartautoclicker.core.base.extensions.applySafeContentInsets
 import com.buzbuz.smartautoclicker.core.common.navigation.TutorialNavigator
 import com.buzbuz.smartautoclicker.core.common.navigation.getTutorialNavigator
@@ -161,6 +162,7 @@ class ScenarioListFragment : Fragment() {
             R.id.action_search -> scenarioListViewModel.setUiState(ScenarioListUiState.Type.SEARCH)
             R.id.action_select_all -> scenarioListViewModel.toggleAllScenarioSelectionForBackup()
             R.id.action_settings -> startSettingsActivity()
+            R.id.action_templates -> showBotTemplatesDialog()
             else -> return false
         }
 
@@ -365,6 +367,25 @@ class ScenarioListFragment : Fragment() {
     private fun startSettingsActivity() {
         requireContext().startActivity(Intent(context, SettingsActivity::class.java))
     }
+
+    /** Ready-made game bots: pick one to create its Smart scenario. */
+    private fun showBotTemplatesDialog() {
+        val templates = BotTemplate.entries
+        val dialogContext = requireContext().getDynamicColorsContext(R.style.AppTheme)
+        MaterialAlertDialogBuilder(dialogContext)
+            .setTitle(R.string.dialog_title_bot_templates)
+            .setItems(templates.map { it.scenarioName }.toTypedArray()) { _, index ->
+                scenarioListViewModel.createBotTemplate(templates[index]) { name ->
+                    MaterialAlertDialogBuilder(dialogContext)
+                        .setTitle(name)
+                        .setMessage(R.string.message_bot_template_created)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
 }
 
 private fun MenuItem.bind(state: ScenarioListUiState.Menu.Item) {
@@ -373,7 +394,5 @@ private fun MenuItem.bind(state: ScenarioListUiState.Menu.Item) {
     icon = icon?.mutate()?.apply {
         alpha = state.iconAlpha
     }
-}
 
-/** Tag for logs. */
-private const val TAG = "ScenarioListFragment"
+}
