@@ -29,7 +29,7 @@
       - Should be short and concise.
       -->
     <string name="menu_item_title_dumb_actions">Actions</string>
-    <string name="menu_item_title_dumb_config">Config</string>
+    <string name="menu_item_title_dumb_config">Settings</string>
 
     <!--
       - Text for items in a list or vertical layout.
@@ -56,8 +56,8 @@
       - Empty list messages.
       - Views handles any length here, but try to be concise.
       -->
-    <string name="message_empty_dumb_action_list">No actions created !</string>
-    <string name="message_empty_secondary_dumb_action_list">You need at least one action to run the scenario</string>
+    <string name="message_empty_dumb_action_list">No actions yet</string>
+    <string name="message_empty_secondary_dumb_action_list">Tap + to add a click, swipe or wait.</string>
 
     <!--
       - Messages.

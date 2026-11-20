@@ -65,9 +65,18 @@ $UI shot 05b-simple-actions-tab
 $UI tapwin dialog 0.88 0.82
 sleep 3
 $UI shot 05c-simple-add-action
+
+step "Simple scenario: choose Click"
+# "Click" is the 2nd row of the Action type sheet (bottom of the dialog)
+$UI tapwin dialog 0.5 0.65
+sleep 3
+$UI shot 05d-click-dialog
+echo "App window frames: $(python3 -c 'import sys; sys.path.insert(0, "scripts/ci"); import ui; print(ui.window_frames())')"
 adb shell input keyevent KEYCODE_BACK
 sleep 2
-$UI shot 05d-after-back
+$UI shot 05e-after-back
+adb shell input keyevent KEYCODE_BACK
+sleep 2
 adb shell input keyevent KEYCODE_BACK
 sleep 2
 $UI shot 06-simple-after-back
