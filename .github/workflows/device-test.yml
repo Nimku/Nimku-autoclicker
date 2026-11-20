@@ -2,11 +2,12 @@ name: Device test (existing build)
 
 # Re-run the emulator smoke test against the APKs of an earlier "Build APK" run, without rebuilding.
 on:
+  # Test-only changes: reuse the last successful build of this branch instead of rebuilding.
+  push:
+    paths:
+      - "scripts/ci/**"
+      - ".github/workflows/device-test.yml"
   workflow_dispatch:
-    inputs:
-      run_id:
-        description: "Run id of the Build APK workflow run to test"
-        required: true
 
 permissions:
   contents: read
@@ -21,13 +22,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download APKs from the build run
-        uses: actions/download-artifact@v4
+      - name: Download APKs from the last successful build of this branch
+        uses: dawidd6/action-download-artifact@v6
         with:
+          workflow: build.yml
+          branch: ${{ github.ref_name }}
+          workflow_conclusion: success
           name: NimkuAutoClicker-apks
           path: dist
-          run-id: ${{ inputs.run_id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable KVM
         run: |

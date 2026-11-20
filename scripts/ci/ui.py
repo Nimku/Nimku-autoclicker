@@ -68,11 +68,15 @@ def matches(node, query):
 
 
 def find(queries, tries=6):
+    """Find the first node matching one of the queries. A "#N" suffix selects the Nth match (1-based)."""
     for _ in range(tries):
-        for n in nodes(ui_tree()):
-            for q in queries:
-                if matches(n, q) and center(n):
-                    return n, q
+        all_nodes = nodes(ui_tree())
+        for q in queries:
+            base, _, idx = q.partition("#")
+            wanted = int(idx) if idx else 1
+            found = [n for n in all_nodes if matches(n, base) and center(n)]
+            if len(found) >= wanted:
+                return found[wanted - 1], q
         time.sleep(1.5)
     return None, None
 
@@ -100,6 +104,9 @@ def dump(name):
     print(focus)
     windows = adb("shell", "dumpsys window windows | grep -E 'Window #[0-9]+ Window\\{'").strip()
     print("Windows:\n" + windows)
+    overlays = adb("shell", "dumpsys window windows | grep -E -A40 'Window #[0-9]+ Window\\{[0-9a-f]+ u0 com.nimku' "
+                            "| grep -E 'Window #|mFrame=|ty=|mViewVisibility|isVisible'").strip()
+    print("App windows:\n" + overlays)
     root = ui_tree()
     if root is None:
         print("(no UI tree)")
@@ -134,6 +141,28 @@ def main():
         x, y = center(node)
         print(f"TAP {q} at {x},{y}")
         adb("shell", "input", "tap", str(x), str(y))
+        time.sleep(2)
+    elif cmd == "taprow":
+        # taprow <row text> <id of the button in the same row>
+        row_text, button_id = sys.argv[2], sys.argv[3]
+        for _ in range(6):
+            all_nodes = nodes(ui_tree())
+            rows = [n for n in all_nodes if matches(n, "text:" + row_text) and center(n)]
+            buttons = [n for n in all_nodes if matches(n, "id:" + button_id) and center(n)]
+            if rows and buttons:
+                ry = center(rows[0])[1]
+                best = min(buttons, key=lambda b: abs(center(b)[1] - ry))
+                x, y = center(best)
+                print(f"TAPROW {row_text}/{button_id} at {x},{y}")
+                adb("shell", "input", "tap", str(x), str(y))
+                time.sleep(2)
+                return
+            time.sleep(1.5)
+        print(f"TAPROW FAILED: {row_text}/{button_id}")
+        sys.exit(1)
+    elif cmd == "tapxy":
+        print(f"TAPXY at {sys.argv[2]},{sys.argv[3]}")
+        adb("shell", "input", "tap", sys.argv[2], sys.argv[3])
         time.sleep(2)
     elif cmd == "taprel":
         size = adb("shell", "wm", "size").strip().split()[-1]

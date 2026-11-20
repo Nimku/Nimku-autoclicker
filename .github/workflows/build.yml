@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "**" ]
     tags: [ "v*" ]
+    # Test script changes are checked by device-test.yml against the last build, without rebuilding.
+    paths-ignore:
+      - "scripts/ci/**"
+      - ".github/workflows/device-test.yml"
   pull_request:
   workflow_dispatch:
 
