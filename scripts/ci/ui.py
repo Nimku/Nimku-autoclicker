@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+"""Small adb UI helper for the emulator smoke test.
+
+Commands:
+  ui.py dump <name>            print the UI tree (texts, ids, bounds), the visible windows and a small
+                               base64 JPEG screenshot (between SHOT_BEGIN/SHOT_END markers) into the log
+  ui.py tap <query> [...]      tap the first node matching one of the queries, retrying for a few seconds.
+                               query: id:<resource id suffix> | text:<text> | textc:<text part> | desc:<content desc>
+  ui.py taprel <x%> <y%>       tap at a position relative to the screen size
+  ui.py has <query>            exit 0 if a node matches
+"""
+import base64
+import io
+import re
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ET
+
+
+def adb(*args, check=False, binary=False, timeout=60):
+    res = subprocess.run(["adb", *args], capture_output=True, timeout=timeout)
+    if check and res.returncode != 0:
+        raise RuntimeError(f"adb {' '.join(args)} failed: {res.stderr.decode(errors='replace')}")
+    return res.stdout if binary else res.stdout.decode(errors="replace")
+
+
+def ui_tree():
+    for _ in range(4):
+        adb("shell", "uiautomator", "dump", "/sdcard/ui.xml")
+        out = adb("exec-out", "cat", "/sdcard/ui.xml")
+        start = out.find("<?xml")
+        end = out.rfind("</hierarchy>")
+        if start != -1 and end != -1:
+            try:
+                return ET.fromstring(out[start:end + len("</hierarchy>")])
+            except ET.ParseError:
+                pass
+        time.sleep(1.5)
+    return None
+
+
+def nodes(root):
+    if root is None:
+        return []
+    return [n for n in root.iter("node")]
+
+
+def center(node):
+    m = re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.get("bounds", ""))
+    if not m:
+        return None
+    x1, y1, x2, y2 = map(int, m.groups())
+    return (x1 + x2) // 2, (y1 + y2) // 2
+
+
+def matches(node, query):
+    kind, _, value = query.partition(":")
+    if kind == "id":
+        return node.get("resource-id", "").endswith(":id/" + value)
+    if kind == "text":
+        return node.get("text", "").strip().lower() == value.lower()
+    if kind == "textc":
+        return value.lower() in node.get("text", "").lower()
+    if kind == "desc":
+        return value.lower() in node.get("content-desc", "").lower()
+    return False
+
+
+def find(queries, tries=6):
+    for _ in range(tries):
+        for n in nodes(ui_tree()):
+            for q in queries:
+                if matches(n, q) and center(n):
+                    return n, q
+        time.sleep(1.5)
+    return None, None
+
+
+def screenshot_b64(width=360):
+    png = adb("exec-out", "screencap", "-p", binary=True)
+    if not png:
+        return None
+    try:
+        from PIL import Image
+        img = Image.open(io.BytesIO(png)).convert("RGB")
+        ratio = width / img.width
+        img = img.resize((width, int(img.height * ratio)))
+        buf = io.BytesIO()
+        img.save(buf, "JPEG", quality=45)
+        return base64.b64encode(buf.getvalue()).decode()
+    except Exception as ex:  # noqa: BLE001
+        print(f"(screenshot conversion failed: {ex})")
+        return None
+
+
+def dump(name):
+    print(f"\n========== UI DUMP: {name} ==========")
+    focus = adb("shell", "dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'").strip()
+    print(focus)
+    windows = adb("shell", "dumpsys window windows | grep -E 'Window #[0-9]+ Window\\{'").strip()
+    print("Windows:\n" + windows)
+    root = ui_tree()
+    if root is None:
+        print("(no UI tree)")
+    for n in nodes(root):
+        text = n.get("text", "")
+        desc = n.get("content-desc", "")
+        rid = n.get("resource-id", "").split(":id/")[-1]
+        if not (text or desc or rid):
+            continue
+        flags = "C" if n.get("clickable") == "true" else "-"
+        flags += "E" if n.get("enabled") == "true" else "d"
+        cls = n.get("class", "").split(".")[-1]
+        print(f"  [{flags}] {cls:<18} id={rid:<32} text={text!r:<40} desc={desc!r} {n.get('bounds')}")
+    shot = screenshot_b64()
+    if shot:
+        print(f"SHOT_BEGIN {name}")
+        for i in range(0, len(shot), 4000):
+            print(shot[i:i + 4000])
+        print(f"SHOT_END {name}")
+    print(f"========== END UI DUMP: {name} ==========\n", flush=True)
+
+
+def main():
+    cmd = sys.argv[1]
+    if cmd == "dump":
+        dump(sys.argv[2])
+    elif cmd == "tap":
+        node, q = find(sys.argv[2:])
+        if node is None:
+            print(f"TAP FAILED: none of {sys.argv[2:]} found")
+            sys.exit(1)
+        x, y = center(node)
+        print(f"TAP {q} at {x},{y}")
+        adb("shell", "input", "tap", str(x), str(y))
+        time.sleep(2)
+    elif cmd == "taprel":
+        size = adb("shell", "wm", "size").strip().split()[-1]
+        w, h = map(int, size.split("x"))
+        x, y = int(w * float(sys.argv[2]) / 100), int(h * float(sys.argv[3]) / 100)
+        print(f"TAPREL at {x},{y}")
+        adb("shell", "input", "tap", str(x), str(y))
+        time.sleep(2)
+    elif cmd == "has":
+        node, _ = find(sys.argv[2:], tries=2)
+        sys.exit(0 if node is not None else 1)
+
+
+if __name__ == "__main__":
+    main()
