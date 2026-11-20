@@ -70,24 +70,41 @@ step "Simple scenario: choose Click"
 # "Click" is the 2nd row of the Action type sheet (bottom of the dialog)
 $UI tapwin dialog 0.5 0.65
 sleep 3
-$UI shot 05d-click-dialog
-echo "App window frames: $(python3 -c 'import sys; sys.path.insert(0, "scripts/ci"); import ui; print(ui.window_frames())')"
-adb shell input keyevent KEYCODE_BACK
-sleep 2
-$UI shot 05e-after-back
-adb shell input keyevent KEYCODE_BACK
-sleep 2
-adb shell input keyevent KEYCODE_BACK
-sleep 2
-$UI shot 06-simple-after-back
+$UI shot 05d-click-position-picker
 
-step "play then stop the Simple scenario from the floating menu"
-$UI tapwin menu 0.5 0.1
-sleep 3
-$UI shot 07-simple-playing
-$UI tapwin menu 0.5 0.1
+step "Simple scenario: place the click on the Phone icon of the launcher, confirm"
+PHONE_X=44; PHONE_Y=481
+$UI tapxy $PHONE_X $PHONE_Y
 sleep 2
-$UI tapwin menu 0.5 0.3
+$UI shot 05e-click-placed
+$UI tapwin menu 0.5 0.125     # check mark of the position picker
+sleep 3
+$UI shot 05f-click-dialog
+echo "App window frames: $(python3 -c 'import sys; sys.path.insert(0, "scripts/ci"); import ui; print(ui.window_frames())')"
+
+step "Simple scenario: save the click, then the scenario"
+$UI tapwin dialog 0.893 0.043   # save button of the click dialog header
+sleep 3
+$UI shot 05g-after-click-saved
+$UI tapwin dialog 0.893 0.043   # save button of the scenario dialog header
+sleep 3
+$UI shot 05h-after-scenario-saved
+
+step "play the Simple scenario: the click must open the Phone app"
+$UI tapwin menu 0.5 0.1
+sleep 5
+$UI shot 07-simple-playing
+FOCUS=$(adb shell dumpsys window | grep -E 'mCurrentFocus')
+echo "Focus after play: $FOCUS"
+if echo "$FOCUS" | grep -qi "dialer"; then
+  echo "CLICK CHECK: OK, the scenario tapped the Phone icon"
+else
+  echo "CLICK CHECK: FAILED, the Phone app is not in front"
+fi
+adb shell input keyevent KEYCODE_HOME
+sleep 2
+$UI shot 07b-home
+$UI tapwin menu 0.5 0.3     # stop
 sleep 4
 $UI shot 08-simple-stopped
 
