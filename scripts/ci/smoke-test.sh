@@ -83,7 +83,9 @@ $UI shot 05f-click-dialog
 echo "App window frames: $(python3 -c 'import sys; sys.path.insert(0, "scripts/ci"); import ui; print(ui.window_frames())')"
 
 step "Simple scenario: save the click, then the scenario"
-$UI tapwin dialog 0.893 0.043   # save button of the click dialog header
+# The click dialog is shorter than the scenario dialog and sits at the bottom of its window:
+# its save button is at the top right of the visible green header.
+$UI tapxy 277 193   # save button of the click dialog header
 sleep 3
 $UI shot 05g-after-click-saved
 $UI tapwin dialog 0.893 0.043   # save button of the scenario dialog header
