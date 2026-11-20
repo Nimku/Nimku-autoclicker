@@ -94,6 +94,11 @@ $UI shot 05h-after-scenario-saved
 
 step "play the Simple scenario: the click must open the Phone app"
 $UI tapwin menu 0.5 0.1
+sleep 3
+$UI shot 06b-first-play-tip
+# First play only: the "Volume Down stops the scenario" tip. Tick "Don't show again", press Understood.
+$UI tapxy 60 454
+$UI tapxy 160 506
 sleep 5
 $UI shot 07-simple-playing
 FOCUS=$(adb shell dumpsys window | grep -E 'mCurrentFocus')

@@ -25,7 +25,7 @@
       -->
     <string name="dialog_overlay_title_warning">Warning</string>
     <string name="dialog_overlay_title_copy_from">Copy from</string>
-    <string name="dialog_title_tutorial">Tutorial</string>
+    <string name="dialog_title_tutorial">Tip</string>
 
     <!--
       - Text for items in a list or vertical layout.
