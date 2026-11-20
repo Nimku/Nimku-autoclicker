@@ -98,8 +98,29 @@ def screenshot_b64(width=360):
         return None
 
 
-def dump(name):
+def window_frames():
+    """Frames of the app windows (activities, dialogs and overlays), from dumpsys window."""
+    out = adb("shell", "dumpsys window windows")
+    frames = []
+    current = None
+    for line in out.splitlines():
+        m = re.search(r"Window #\d+ Window\{[0-9a-f]+ u0 ([^}]*)\}", line)
+        if m:
+            current = m.group(1)
+            continue
+        if current and "com.nimku" in current:
+            f = re.search(r"mFrame=\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]", line)
+            if f:
+                frames.append((current, tuple(map(int, f.groups()))))
+                current = None
+    return frames
+
+
+def dump(name, tree=True):
     print(f"\n========== UI DUMP: {name} ==========")
+    # Screenshot first: the UI tree dump below connects UiAutomation, which suspends the app's
+    # accessibility service (and so its floating menu) while it runs.
+    shot = screenshot_b64()
     focus = adb("shell", "dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'").strip()
     print(focus)
     windows = adb("shell", "dumpsys window windows | grep -E 'Window #[0-9]+ Window\\{'").strip()
@@ -107,9 +128,10 @@ def dump(name):
     overlays = adb("shell", "dumpsys window windows | grep -E -A40 'Window #[0-9]+ Window\\{[0-9a-f]+ u0 com.nimku' "
                             "| grep -E 'Window #|mFrame=|ty=|mViewVisibility|isVisible'").strip()
     print("App windows:\n" + overlays)
-    root = ui_tree()
+    print("App window frames: " + "; ".join(f"{t} {f}" for t, f in window_frames()))
+    root = ui_tree() if tree else None
     if root is None:
-        print("(no UI tree)")
+        print("(UI tree not dumped)")
     for n in nodes(root):
         text = n.get("text", "")
         desc = n.get("content-desc", "")
@@ -120,7 +142,6 @@ def dump(name):
         flags += "E" if n.get("enabled") == "true" else "d"
         cls = n.get("class", "").split(".")[-1]
         print(f"  [{flags}] {cls:<18} id={rid:<32} text={text!r:<40} desc={desc!r} {n.get('bounds')}")
-    shot = screenshot_b64()
     if shot:
         print(f"SHOT_BEGIN {name}")
         for i in range(0, len(shot), 4000):
@@ -133,6 +154,28 @@ def main():
     cmd = sys.argv[1]
     if cmd == "dump":
         dump(sys.argv[2])
+    elif cmd == "shot":
+        dump(sys.argv[2], tree=False)
+    elif cmd == "tapwin":
+        # tapwin <window title part> <x fraction> <y fraction> [index]: tap inside an app window (e.g. the overlay menu)
+        part, fx, fy = sys.argv[2], float(sys.argv[3]), float(sys.argv[4])
+        idx = int(sys.argv[5]) if len(sys.argv) > 5 else 0
+        frames = window_frames()
+        overlays = [f for t, f in frames if "/" not in t]  # overlay windows have no activity name
+        if part == "menu":  # the floating menu: smallest overlay window
+            wins = sorted(overlays, key=lambda f: (f[2] - f[0]) * (f[3] - f[1]))
+        elif part == "dialog":  # biggest overlay window
+            wins = sorted(overlays, key=lambda f: -(f[2] - f[0]) * (f[3] - f[1]))
+        else:
+            wins = [f for t, f in frames if part in t]
+        if len(wins) <= idx:
+            print(f"TAPWIN FAILED: no window '{part}' (#{idx}); frames: {window_frames()}")
+            sys.exit(1)
+        l, t, r, b = wins[idx]
+        x, y = int(l + (r - l) * fx), int(t + (b - t) * fy)
+        print(f"TAPWIN {part}#{idx} frame={wins[idx]} at {x},{y}")
+        adb("shell", "input", "tap", str(x), str(y))
+        time.sleep(2)
     elif cmd == "tap":
         node, q = find(sys.argv[2:])
         if node is None:

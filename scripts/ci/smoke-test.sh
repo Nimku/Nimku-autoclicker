@@ -44,51 +44,69 @@ $UI tap id:button_save
 sleep 3
 $UI dump 03-list-after-simple-creation
 
+# From here on, while a scenario is running, only screenshots are taken ($UI shot): dumping the UI tree
+# suspends the app's accessibility service and closes its floating menu.
+
 step "start the Simple scenario with its play button"
 $UI taprow SimpleTest button_start
-sleep 4
-$UI dump 04-simple-start-requested
-$UI tap text:"Start now" text:"Start" text:"Allow" text:"OK" >/dev/null 2>&1 || true
-sleep 5
-$UI dump 05-simple-started
+sleep 6
+$UI shot 04-simple-started
 
-step "stop the Simple scenario"
-$UI tap id:btn_stop desc:stop || {
-  echo "(stop button not reachable, force stopping the app)"
-  adb shell am force-stop $PKG
-}
+step "open the Simple scenario actions from the floating menu (4th button)"
+$UI tapwin menu 0.5 0.7
+sleep 3
+$UI shot 05-simple-config-dialog
+adb shell input keyevent KEYCODE_BACK
 sleep 2
-adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null
-sleep 5
-$UI dump 06-back-in-app
+$UI shot 06-simple-after-back
+
+step "play then stop the Simple scenario from the floating menu"
+$UI tapwin menu 0.5 0.1
+sleep 3
+$UI shot 07-simple-playing
+$UI tapwin menu 0.5 0.1
+sleep 2
+$UI tapwin menu 0.5 0.3
+sleep 4
+$UI shot 08-simple-stopped
 
 step "create a Smart scenario"
+adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null
+sleep 4
 $UI tap id:add id:empty_create_button
 sleep 2
 $UI tap id:scenario_type_smart
 set_name SmartTest
-$UI dump 07-creation-dialog-smart
+$UI dump 09-creation-dialog-smart
 $UI tap id:button_save
 sleep 3
-$UI dump 08-list-after-smart-creation
+$UI dump 10-list-after-smart-creation
+sleep 5   # let the accessibility service bind again after the UI tree dumps
 
 step "start the Smart scenario"
 $UI taprow SmartTest button_start
-sleep 4
-$UI dump 09-smart-start-requested
-$UI tap text:"Start now" text:"Start" textc:"start now" text:"Allow" text:"OK" >/dev/null 2>&1 || true
+sleep 5
+$UI shot 11-smart-start-requested
+if adb shell dumpsys window | grep -q "mCurrentFocus=.*MediaProjectionPermissionActivity"; then
+  echo "(screen capture permission dialog shown, accepting it)"
+  $UI tap text:"Start now" text:"Start" textc:"start now"
+  sleep 3
+fi
 sleep 6
-$UI dump 10-smart-started
+$UI shot 12-smart-started
 
-step "open the scenario editor from the floating menu"
-$UI tap id:btn_click_list || echo "(floating menu not in the UI tree)"
+step "open the scenario editor from the floating menu (3rd button)"
+$UI tapwin menu 0.5 0.625
 sleep 4
-$UI dump 11-scenario-dialog
+$UI shot 13-scenario-dialog
 
-step "add an event"
-$UI tap id:fab_add id:button_add id:add || true
+step "close the editor and stop"
+adb shell input keyevent KEYCODE_BACK
+sleep 3
+$UI shot 14-after-back
+$UI tapwin menu 0.5 0.375
 sleep 4
-$UI dump 12-event-dialog
+$UI shot 15-smart-stopped
 
 step "crash report"
 echo "---- crash buffer ----"
