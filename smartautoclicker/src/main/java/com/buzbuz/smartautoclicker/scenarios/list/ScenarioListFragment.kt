@@ -394,5 +394,7 @@ private fun MenuItem.bind(state: ScenarioListUiState.Menu.Item) {
     icon = icon?.mutate()?.apply {
         alpha = state.iconAlpha
     }
-
 }
+
+/** Tag for logs. */
+private const val TAG = "ScenarioListFragment"
