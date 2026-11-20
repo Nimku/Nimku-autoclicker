@@ -101,26 +101,29 @@ def screenshot_b64(width=360):
 def window_frames():
     """Frames of the app windows (activities, dialogs and overlays), from dumpsys window."""
     out = adb("shell", "dumpsys window windows")
-    frames = []
+    frames = {}
+    order = []
     current = None
     for line in out.splitlines():
-        m = re.search(r"Window #\d+ Window\{[0-9a-f]+ u0 ([^}]*)\}", line)
+        m = re.search(r"Window #\d+ Window\{([0-9a-f]+) u0 ([^}]*)\}", line)
         if m:
-            current = m.group(1)
+            current = (m.group(1), m.group(2)) if "com.nimku" in m.group(2) else None
+            if current:
+                order.append(current)
             continue
-        if current and "com.nimku" in current:
-            f = re.search(r"mFrame=\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]", line)
-            if f:
-                frames.append((current, tuple(map(int, f.groups()))))
-                current = None
-                continue
-            # Overlay windows: mAttrs={(x,y)(wxh) gr=TOP START ...
-            a = re.search(r"mAttrs=\{\((-?\d+),(-?\d+)\)\((\d+|fill|wrap)x(\d+|fill|wrap)\)", line)
-            if a and a.group(3).isdigit() and a.group(4).isdigit():
-                x, y, w, h = int(a.group(1)), int(a.group(2)), int(a.group(3)), int(a.group(4))
-                frames.append((current, (x, y, x + w, y + h)))
-                current = None
-    return frames
+        if not current:
+            continue
+        # Real frame on screen (preferred): "frame=[l,t][r,b]" or "mFrame=[l,t][r,b]"
+        f = re.search(r"\b(?:m)?[Ff]rame=\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]", line)
+        if f:
+            frames[current] = ("frame", tuple(map(int, f.groups())))
+            continue
+        # Fallback, layout attributes: mAttrs={(x,y)(wxh) gr=TOP START ...
+        a = re.search(r"mAttrs=\{\((-?\d+),(-?\d+)\)\((\d+|fill|wrap)x(\d+|fill|wrap)\)", line)
+        if a and a.group(3).isdigit() and a.group(4).isdigit() and current not in frames:
+            x, y, w, h = int(a.group(1)), int(a.group(2)), int(a.group(3)), int(a.group(4))
+            frames[current] = ("attrs", (x, y, x + w, y + h))
+    return [(title, frames[(h, title)][1]) for h, title in order if (h, title) in frames]
 
 
 def dump(name, tree=True):

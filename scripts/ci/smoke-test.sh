@@ -56,6 +56,18 @@ step "open the Simple scenario actions from the floating menu (4th button)"
 $UI tapwin menu 0.5 0.7
 sleep 3
 $UI shot 05-simple-config-dialog
+echo "App window frames: $(python3 -c 'import sys; sys.path.insert(0, "scripts/ci"); import ui; print(ui.window_frames())')"
+
+step "Simple scenario: open the Actions tab and press +"
+$UI tapwin dialog 0.75 0.94
+sleep 2
+$UI shot 05b-simple-actions-tab
+$UI tapwin dialog 0.88 0.82
+sleep 3
+$UI shot 05c-simple-add-action
+adb shell input keyevent KEYCODE_BACK
+sleep 2
+$UI shot 05d-after-back
 adb shell input keyevent KEYCODE_BACK
 sleep 2
 $UI shot 06-simple-after-back
