@@ -113,6 +113,13 @@ def window_frames():
             if f:
                 frames.append((current, tuple(map(int, f.groups()))))
                 current = None
+                continue
+            # Overlay windows: mAttrs={(x,y)(wxh) gr=TOP START ...
+            a = re.search(r"mAttrs=\{\((-?\d+),(-?\d+)\)\((\d+|fill|wrap)x(\d+|fill|wrap)\)", line)
+            if a and a.group(3).isdigit() and a.group(4).isdigit():
+                x, y, w, h = int(a.group(1)), int(a.group(2)), int(a.group(3)), int(a.group(4))
+                frames.append((current, (x, y, x + w, y + h)))
+                current = None
     return frames
 
 
