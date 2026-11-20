@@ -107,6 +107,7 @@ if echo "$FOCUS" | grep -qi "dialer"; then
   echo "CLICK CHECK: OK, the scenario tapped the Phone icon"
 else
   echo "CLICK CHECK: FAILED, the Phone app is not in front"
+  CLICK_FAILED=1
 fi
 adb shell input keyevent KEYCODE_HOME
 sleep 2
@@ -166,4 +167,8 @@ if adb logcat -d -b crash | grep -q "$PKG"; then
   echo "SMOKE TEST: APP CRASHED"
   exit 1
 fi
-echo "SMOKE TEST: NO CRASH"
+if [ "${CLICK_FAILED:-0}" = "1" ]; then
+  echo "SMOKE TEST: THE SCENARIO DID NOT TAP"
+  exit 1
+fi
+echo "SMOKE TEST: NO CRASH, CLICK WORKS"
