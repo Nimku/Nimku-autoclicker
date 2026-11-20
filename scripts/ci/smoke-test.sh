@@ -130,7 +130,10 @@ $UI dump 10-list-after-smart-creation
 sleep 5   # let the accessibility service bind again after the UI tree dumps
 
 step "create the Clash of Kings bot from the Game bots button"
-$UI tap desc:"Game bots" id:action_templates
+$UI tap desc:"Game bots" id:action_templates || {
+  $UI tap desc:"More options"
+  $UI tap text:"Game bots"
+}
 sleep 2
 $UI dump 10b-bot-templates-dialog
 $UI tap textc:"Kill monsters"
